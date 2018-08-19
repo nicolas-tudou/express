@@ -5,7 +5,15 @@ const bodyParser = require('body-parser');
 const multer  = require('multer');
  
 app.use(express.static('public'));
-var upload = multer({dest: 'src/tem/'})
+var storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, './src/tem');
+    },
+    filename: (req, file, cb) => {
+        cb(null, file.originalname);
+    }
+})
+var upload = multer({dest: 'src/tem/', storage: storage})
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/src/upload_test.html');
