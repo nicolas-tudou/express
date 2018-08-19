@@ -5,14 +5,27 @@ const bodyParser = require('body-parser');
 const multer  = require('multer');
  
 app.use(express.static('public'));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(multer({ dest: '/upload/'}).array('image'));
+var upload = multer({dest: 'src/tem/'})
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/src/upload_test.html');
 })
-app.post('/upload', (req, res) => {
-    console.log(req.files[0])
+app.post('/upload', upload.single('img'), (req, res, next) => {
+    fs.readFile(req.file.path, (err, data) => {
+        fs.writeFile(__dirname + '/src/img/' + req.file.originalname, data, (err) => {
+            if(err) {
+                console.log(err);
+                return
+            }else {
+                var response = {
+                    message: 'File upload success!',
+                    filename: req.file.originalname
+                };
+                console.log(response);
+            }
+            // res.send(JSON.stringify(response));
+        })
+    })
     res.send('OK')
 })
 
